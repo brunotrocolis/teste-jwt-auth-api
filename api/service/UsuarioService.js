@@ -1,7 +1,10 @@
 const { Usuario } = require('../models');
 const AutenticacaoService = require('./AutenticacaoService');
+const { situacao } = require('../constants');
 
 class UsuarioService {
+    static GERAR_TOKEN = 'Gerar token';
+
     static async save(usuario) {
         try {
             usuario.senha = AutenticacaoService.criptografarSenha(usuario.senha);
@@ -25,7 +28,10 @@ class UsuarioService {
 
     static async gerarToken(email, senha) {
 
+        console.log('INICIO', this.GERAR_TOKEN );
+
         if (!email || !senha) {
+            console.error('DADOS INSUFICIÊNTES');
             return {
                 status: 400,
                 auth: false,
@@ -35,7 +41,17 @@ class UsuarioService {
 
         const usuario = await this.findByEmail(email);
 
+        if(situacao.ATIVO !== usuario.situacao) {
+            console.error('USUÁRIO ' + usuario.situacao);
+            return {
+                status: 401,
+                auth: false,
+                message: 'Situação do usuário é ' + usuario.situacao
+            };
+        }
+
         if(!usuario) {
+            console.error('USUÁRIO NÃO ENCONTRADO');
             return {
                 status: 401,
                 auth: false,
@@ -44,12 +60,15 @@ class UsuarioService {
         }
 
         if(!AutenticacaoService.validarSenha(senha, usuario.senha)) {
+            console.error('SENHA INVÁLIDA');
             return {
                 status: 401,
                 auth: false,
                 message: 'Senha inválida'
             }
         }
+
+        console.log('FIM', this.GERAR_TOKEN );
 
         return {
             status: 200,
