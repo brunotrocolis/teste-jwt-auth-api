@@ -9,4 +9,4 @@ app.use(express.json())
 
 routes(app);
 
-app.listen(8080);
+app.listen( process.env.SRV_PORT|| 3000);
