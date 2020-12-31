@@ -1,6 +1,6 @@
 const { Usuario } = require('../models');
 const AutenticacaoService = require('./AutenticacaoService');
-const { situacao } = require('../constants');
+const { situacao, mensagens } = require('../constants');
 
 class UsuarioService {
     static GERAR_TOKEN = 'Gerar token';
@@ -35,27 +35,27 @@ class UsuarioService {
             return {
                 status: 400,
                 auth: false,
-                message: 'Dados insuficiêntes'
+                message: mensagens.DADOS_INSUFICIENTES
             };
         }
 
         const usuario = await this.findByEmail(email);
-
-        if(situacao.ATIVO !== usuario.situacao) {
-            console.error('USUÁRIO ' + usuario.situacao);
-            return {
-                status: 401,
-                auth: false,
-                message: 'Situação do usuário é ' + usuario.situacao
-            };
-        }
 
         if(!usuario) {
             console.error('USUÁRIO NÃO ENCONTRADO');
             return {
                 status: 401,
                 auth: false,
-                message: 'Usuário não encontrado'
+                message: mensagens.USUARIO_NAO_ENCONTRADO
+            };
+        }
+
+        if(situacao.ATIVO !== usuario.situacao) {
+            console.error('USUÁRIO ' + usuario.situacao);
+            return {
+                status: 401,
+                auth: false,
+                message: mensagens.SITUACAO_USUARIO_E + usuario.situacao
             };
         }
 
@@ -64,7 +64,7 @@ class UsuarioService {
             return {
                 status: 401,
                 auth: false,
-                message: 'Senha inválida'
+                message: mensagens.SENHA_INVALIDA
             }
         }
 

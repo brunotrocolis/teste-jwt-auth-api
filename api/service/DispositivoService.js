@@ -1,5 +1,5 @@
 const {Dispositivo, Usuario} = require('../models');
-const {situacao} = require('../constants');
+const {situacao, mensagens } = require('../constants');
 const crypto = require('crypto');
 
 class DispositivoService {
@@ -16,7 +16,7 @@ class DispositivoService {
             if (await Usuario.count({where: {id: dispositivo.usuario}}) <= 0) {
                 return {
                     status: 400,
-                    message: 'Usuario não encontrado'
+                    message: mensagens.USUARIO_NAO_ENCONTRADO
                 }
             }
             dispositivo = await Dispositivo.create(dispositivo);
